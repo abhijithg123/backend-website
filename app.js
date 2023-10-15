@@ -8,6 +8,7 @@ var userRouter = require('./routes/user');
 var adminRouter = require('./routes/admin');
 var fileupload=require('express-fileupload')
 var app = express();
+var db= require('./config/connection')
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -27,6 +28,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileupload())
+db.connect((err)=>{
+  if(err)
+    console.log("connection error"+err);
+  else
+    console.log('databse connected to port');
+
+})
 app.use('/', userRouter);
 app.use('/admin', adminRouter);
 
