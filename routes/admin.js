@@ -29,5 +29,9 @@ router.get('/', function(req, res, next) {
 router.get('/add-products',function(req, res, next) {
   res.render('admin/add-products');
 });
+ router.post('/add-products',(req,res)=>{
+  console.log(req.body);
+  console.log(req.files.images);
+ })
 
 module.exports = router;
