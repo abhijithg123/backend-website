@@ -19,11 +19,20 @@ router.get('/signup',(req,res)=>{
 router.post('/signup', (req, res) => {
   userHelpers.doSignup(req.body).then((response) => {
       console.log(response);
-      res.redirect('/'); // Redirect to the homepage or another page after signup
+      res.redirect('/login'); 
   }).catch((error) => {
       console.error(error); // Log and handle errors
       res.status(500).send('Error occurred during signup.'); // Handle errors
   });
 });
+router.post('/login', (req, res) => {
+  userHelpers.doLogin(req.body).then((user) => {
+      res.redirect('/'); // Redirect to the homepage on successful login
+  }).catch((error) => {
+      console.error(error);
+      res.status(401).send('Login failed'); // Handle login failure
+  });
+});
+
 
 module.exports = router;
