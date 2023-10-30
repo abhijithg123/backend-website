@@ -7,7 +7,7 @@ var userHelpers=require("../helpers/user_helpers")
 router.get('/', function(req, res, next) {
   productHelpers.getAllProduct().then((products)=>{
     console.log('products:',products);
-    res.render('user/view-products',{admin:false,products});
+    res.render('user/view-products',{products});
   })
 })
 router.get('/login',(req, res)=>{
@@ -24,15 +24,24 @@ router.post('/signup', (req, res) => {
       console.error(error); // Log and handle errors
       res.status(500).send('Error occurred during signup.'); // Handle errors
   });
-});
+})
 router.post('/login', (req, res) => {
-  userHelpers.doLogin(req.body).then((user) => {
+  userHelpers.doLogin(req.body).then((response) => {
+    if (response.status === 'success') {
       res.redirect('/'); // Redirect to the homepage on successful login
+    } else {
+      res.redirect('/login');
+    }
   }).catch((error) => {
-      console.error(error);
-      res.status(401).send('Login failed'); // Handle login failure
+    console.error(error);
+    res.status(401).send('Login failed'); // Handle login failure
   });
 });
+
+router.get('/logout',(req,res)=>{
+  req.session.destroy()
+  res.redirect('/')
+})
 
 
 module.exports = router;
