@@ -3,6 +3,7 @@ var collection=require('../config/collection')
 const bcrypt=require('bcrypt');
 
 
+
 module.exports={
         doSignup: (userData) => {
             return new Promise(async (resolve, reject) => { // Fixed the 'promise' typo
@@ -25,7 +26,8 @@ module.exports={
               
                       if (passwordMatch) {
                         console.log("Login success");
-                        resolve({ status: "success", message: "Login success" });
+                        resolve({ status: "success", message: "Login success", user: user });
+
                       } else {
                         console.log("Login failed");
                         resolve({ status: "fail", message: "Login failed" });

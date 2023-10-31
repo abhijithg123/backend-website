@@ -9,7 +9,7 @@ var adminRouter = require('./routes/admin');
 var fileupload=require('express-fileupload')
 var app = express();
 var db= require('./config/connection')
-var session=require('express-session')
+const session = require('express-session');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,11 +30,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileupload())
 app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true ,maxAge:600000}
-}))
+    secret: 'key',
+    resave: false,
+    saveUninitialized: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 db.connect((err)=>{
   if(err)
     console.log("connection error"+err);
