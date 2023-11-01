@@ -12,9 +12,18 @@ router.get('/', function(req, res, next) {
     res.render('user/view-products',{products,user});
   })
 })
-router.get('/login',(req, res)=>{
-  res.render('user/login')
-})
+
+router.get('/login', (req, res) => {
+  if (req.session.loggedIn) {
+    res.redirect('/');
+  } else {
+    const loginErr = req.session.loginErr || false;
+    console.log("loginErr in GET /login:", loginErr); // Add this line for debugging
+    res.render('user/login', { loginErr });
+    req.session.loginErr = false;
+  }
+});
+
 router.get('/signup',(req,res)=>{
   res.render('user/signup')
 })
@@ -29,12 +38,14 @@ router.post('/signup', (req, res) => {
 })
 router.post('/login', (req, res) => {
   userHelpers.doLogin(req.body).then((response) => {
-    if (response.status==='success') {
+    if (response.status === 'success') {
       req.session.loggedIn = true;
       req.session.user = response.user;
       res.redirect('/');
     } else {
-      res.redirect('/login');
+     
+      console.log("loginErr in POST /login:", req.session.loginErr); // Add this line for debugging
+      res.render('user/login', { loginErr: "Invalid user or password" });
     }
   }).catch((error) => {
     console.error(error);

@@ -21,7 +21,11 @@
               <li class="nav-item">
                 <a class="nav-link active" href="#">Products</a>
               </li>
-              
+              {{#if user}}
+                <li class="nav-item">
+                <a class="nav-link active" href="#">Orders</a>
+              </li>
+              {{/if}}
               <li class="nav-item dropdown">
                 <a
                   class="nav-link dropdown-toggle"
