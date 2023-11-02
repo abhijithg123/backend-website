@@ -2,8 +2,6 @@ var db = require('../config/connection');
 var collection=require('../config/collection')
 const bcrypt=require('bcrypt');
 
-
-
 module.exports={
         doSignup: (userData) => {
             return new Promise(async (resolve, reject) => { // Fixed the 'promise' typo

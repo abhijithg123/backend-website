@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var productHelpers=require("../helpers/product_helpers")
 
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   productHelpers.getAllProduct().then((products)=>{
@@ -34,7 +35,21 @@ router.get('/add-products',function(req, res, next) {
       });
     });
   });
-  
+  router.get('/delete-product/:id', (req, res) => {
+    const prodId = req.params.id; // Get the product ID from the URL parameter
+    productHelpers.deleteProduct(prodId)
+        .then((response) => {
+            // Handle successful deletion
+            console.log('Product deleted:', response);
+            res.redirect('/admin'); // Redirect to the admin page after deletion
+        })
+        .catch((error) => {
+            // Handle the rejection, which may be "Document not found" or other errors
+            console.error('Error deleting product:', error);
+            res.status(500).send('Error occurred during deletion.');
+        });
+});
+
 
  
 module.exports = router;

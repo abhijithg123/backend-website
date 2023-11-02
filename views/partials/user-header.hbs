@@ -16,16 +16,19 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                <a class="nav-link active" aria-current="page" href="/">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="#">Products</a>
+                <a class="nav-link active" href="/">Products</a>
               </li>
               {{#if user}}
                 <li class="nav-item">
                 <a class="nav-link active" href="#">Orders</a>
               </li>
               {{/if}}
+              <li class="nav-item">
+                <a class="nav-link active" href="/cart">Carts</a>
+              </li>
               <li class="nav-item dropdown">
                 <a
                   class="nav-link dropdown-toggle"
