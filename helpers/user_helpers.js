@@ -28,7 +28,7 @@ module.exports={
 
                       } else {
                         console.log("Login failed");
-                        resolve({ status: "fail", message: "Login failed" });
+                        resolve({ status: "fail", message: "Login failed", user: user});
                       }
                     } else {
                       console.log("Login failed -user not found");

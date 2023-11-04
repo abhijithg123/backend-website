@@ -1,6 +1,7 @@
 var db = require('../config/connection');
 var collection=require('../config/collection')
 const { ObjectId } = require('mongodb');
+
 module.exports = {
     addProducts: (product, callback) => {
         console.log(product);
@@ -29,6 +30,13 @@ module.exports = {
                 reject(error); // Reject when an error occurs
             });
         });
+    },
+    getProductDetails:(proId)=>{
+        return new Promise((resolve, reject) => {
+            db.get().collection(collection.PRODUCT_COLLECTION).findOne({_id:new ObjectId(proId)}).then((product)=>{
+                resolve(product)
+            })
+        })
     }
 }    
 

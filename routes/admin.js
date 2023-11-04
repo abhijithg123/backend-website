@@ -50,6 +50,12 @@ router.get('/add-products',function(req, res, next) {
         });
 });
 
+   router.get('/edit-products/:id',async(req,res)=>{
+     let product=await productHelpers.getProductDetails(req.params.id)
+     console.log(product);
+     res.render('admin/edit-products',{product})
+  }) 
+
 
  
 module.exports = router;
