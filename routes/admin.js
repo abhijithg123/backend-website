@@ -55,6 +55,27 @@ router.get('/add-products',function(req, res, next) {
      console.log(product);
      res.render('admin/edit-products',{product})
   }) 
+  router.post('/edit-products/:id',(req,res)=>{
+    console.log(req.params.id);
+    productHelpers.updateProducts(req.params.id,req.body).then(()=>{
+      res.redirect('/admin')
+      if(req.files.images){
+        let image = req.files.images;
+        let insertedId=req.params.id
+
+      const imagePath = `./public/images/${insertedId}.jpg`;
+      image.mv(imagePath, (err, done) => {
+        if (!err) {
+          // Render a success page or redirect as needed
+          res.render('admin/add-products');
+        } else {
+          console.log(err);
+          // Handle the error
+          }
+       });
+      }
+    })
+  })
 
 
  
