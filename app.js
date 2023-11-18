@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var exphbs= require('express-handlebars'); 
+const exphbs= require('express-handlebars'); 
 var userRouter = require('./routes/user');
 var adminRouter = require('./routes/admin');
 var fileupload=require('express-fileupload')
@@ -41,7 +41,7 @@ db.connect((err)=>{
   if(err)
     console.log("connection error"+err);
   else
-    console.log('databse connected to port');
+    console.log('database connected to port');
 
 })
 app.use('/', userRouter);

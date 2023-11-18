@@ -55,28 +55,34 @@ router.get('/add-products',function(req, res, next) {
      console.log(product);
      res.render('admin/edit-products',{product})
   }) 
-  router.post('/edit-products/:id',(req,res)=>{
-    console.log(req.params.id);
-    productHelpers.updateProducts(req.params.id,req.body).then(()=>{
-      res.redirect('/admin')
-      if(req.files.images){
-        let image = req.files.images;
-        let insertedId=req.params.id
+  router.post('/edit-products/:id', (req, res) => {
+    const productId = req.params.id;
+    const productDetails = req.body;
 
-      const imagePath = `./public/images/${insertedId}.jpg`;
-      image.mv(imagePath, (err, done) => {
-        if (!err) {
-          // Render a success page or redirect as needed
-          res.render('admin/add-products');
-        } else {
-          console.log(err);
-          // Handle the error
-          }
-       });
-      }
-    })
-  })
+    // Check if a new image file was uploaded
+    if (req.files && req.files.images) {
+        const image = req.files.images;
+        const imagePath = `./public/images/${productId}.jpg`;
 
+        // Move the new image to the product's image path
+        image.mv(imagePath, (err) => {
+            if (err) {
+                console.error('Error uploading image:', err);
+                // Handle the error, possibly redirect or render an error page
+            }
+        });
+    }
+
+    // Update the product details (excluding the image)
+    productHelpers.updateProducts(productId, productDetails)
+        .then(() => {
+            res.redirect('/admin');
+        })
+        .catch((error) => {
+            console.error('Error updating product:', error);
+            // Handle the error, possibly redirect or render an error page
+        });
+});
 
  
 module.exports = router;

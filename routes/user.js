@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
   productHelpers.getAllProduct().then((products)=>{
     let user=req.session.user
     console.log("user",user);
-    console.log('products:',products);
+   // console.log('products:',products);//
     res.render('user/view-products',{products,user});
   })
 })
@@ -69,6 +69,16 @@ router.get('/cart',verifyLogin,(req,res)=>{
   res.render('user/cart')
 })
 
+router.get('/add-to-cart/:id', verifyLogin, (req, res) => {
+  userHelpers.addToCart(req.params.id, req.session.user._id)
+    .then(() => {
+      res.redirect('/');
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error adding to cart');
+    });
+});
 
 
 

@@ -1,7 +1,7 @@
 var db = require('../config/connection');
 var collection=require('../config/collection')
 const bcrypt=require('bcrypt');
-
+const { ObjectId } = require('mongodb');
 module.exports={
         doSignup: (userData) => {
             return new Promise(async (resolve, reject) => { // Fixed the 'promise' typo
@@ -39,5 +39,26 @@ module.exports={
                     reject({ status: "error", message: "An error occurred during login" });
                   }
                 });
-              }
-            }         
+              },
+              addToCart: (prodId, userId) => {
+                return new Promise(async (resolve, reject) => {
+                    let userCart = await db.get().collection(collection.CART_COLLECTION).findOne({ user: new ObjectId(userId) })
+                    if (userCart) {
+                       {
+                        db.get().collection(collection.USER_COLLECTION).updateOne({user:new ObjectId(userId) },
+                        $push:product[new ObjectId(prodId)]
+                        )
+                        
+                       }
+                    } else {
+                        let cartObj = {
+                            user: new ObjectId(userId),
+                            products: [new ObjectId(prodId)]
+                        }
+                        db.get().collection(collection.CART_COLLECTION).insertOne(cartObj).then((response) => {
+                            resolve()
+                        })
+                    }
+                })
+            }
+          }            
