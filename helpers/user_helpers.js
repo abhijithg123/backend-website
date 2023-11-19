@@ -42,23 +42,55 @@ module.exports={
               },
               addToCart: (prodId, userId) => {
                 return new Promise(async (resolve, reject) => {
-                    let userCart = await db.get().collection(collection.CART_COLLECTION).findOne({ user: new ObjectId(userId) })
-                    if (userCart) {
-                       {
-                        db.get().collection(collection.USER_COLLECTION).updateOne({user:new ObjectId(userId) },
-                        $push:product[new ObjectId(prodId)]
-                        )
-                        
-                       }
-                    } else {
-                        let cartObj = {
-                            user: new ObjectId(userId),
-                            products: [new ObjectId(prodId)]
+                    try {
+                        let userCart = await db.get().collection(collection.CART_COLLECTION).findOne({ user: new ObjectId(userId) });
+            
+                        if (userCart) {
+                            console.log('Updating existing cart:', userCart);
+                            await db.get().collection(collection.CART_COLLECTION).updateOne(
+                                { user: new ObjectId(userId) },
+                                { $push: { products: new ObjectId(prodId) } }
+                            );
+                            resolve();
+                        } else {
+                            console.log('Creating a new cart.');
+                            let cartObj = {
+                                user: new ObjectId(userId),
+                                products: [new ObjectId(prodId)]
+                            };
+                            await db.get().collection(collection.CART_COLLECTION).insertOne(cartObj);
+                            resolve();
                         }
-                        db.get().collection(collection.CART_COLLECTION).insertOne(cartObj).then((response) => {
-                            resolve()
-                        })
+                    } catch (error) {
+                        console.error('Error in addToCart:', error);
+                        reject(error);
                     }
-                })
-            }
+                });
+            },
+            getCartProducts:(userId)=>{
+              return new Promise(async(resolve, reject) => {
+                let cartItems=await db.get().collection(collection.CART_COLLECTION).aggregate([
+                  {
+                    $match:{user:new ObjectId(userId)}
+                  },
+                  {
+                    $lookup:
+                    {
+                      from:collection.PRODUCT_COLLECTION,
+                      let:{prolist:'$products'},
+                      pipeline:[
+                        {
+                          $match:{
+                            $expr:{
+                              $in:['$_id','$$prolist']
+                            }
+                          }
+                        }
+                      ],as:'cartItems'
+                    }
+                  }
+                ]).toArray()
+                resolve(cartItems[0].cartItems)
+              })
+            }          
           }            
