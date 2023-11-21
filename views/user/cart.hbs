@@ -1,1 +1,29 @@
-<h1>Cart is empty</h1>
+<section>
+    <div class="container p-3">
+         <table class="table">
+    
+  <thead>
+    <tr>
+      <th scope="col">Sl.no</th>
+      <th scope="col">Item</th>
+      <th scope="col">Title</th>
+      <th scope="col">quantity</th>
+      
+    </tr>
+  </thead>
+  {{#each products}}
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td><img style="width: 50px;height:50px" src="/images/{{this._id}}.jpg" alt=""></td>
+      <td>{{this.name}}</td>
+      <td><button type="button" class="btn btn-secondary">+</button><button type="button" class="btn btn-light">1</button><button  type="button" class="btn btn-secondary">-</button></td>
+      <td><button type="button" class="btn btn-danger">remove</button></td>
+    </tr>
+    
+  </tbody>
+  {{/each}}
+</table>
+    </div>
+   
+</section>

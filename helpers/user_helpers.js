@@ -66,7 +66,7 @@ module.exports={
                         reject(error);
                     }
                 });
-            },
+            },//agrregst for combining 2 trables using lookup
             getCartProducts:(userId)=>{
               return new Promise(async(resolve, reject) => {
                 let cartItems=await db.get().collection(collection.CART_COLLECTION).aggregate([
@@ -92,5 +92,19 @@ module.exports={
                 ]).toArray()
                 resolve(cartItems[0].cartItems)
               })
-            }          
+            },
+            getCartCount: (userId) => {
+              return new Promise(async(resolve, reject) => {
+                let count = 0;
+                let cart = await db.get().collection(collection.CART_COLLECTION).findOne({ user: new ObjectId(userId) });
+            
+                if (cart && cart.products) {
+                  count = cart.products.length;
+                  console.log(cart.products.length);
+                }
+            
+                resolve(count);
+              });
+            }
+                  
           }            

@@ -1,7 +1,7 @@
  <header>
       <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid p-2">
-          <a class="navbar-brand" href="#">shopping cart user</a>
+          <a class="navbar-brand" href="/">shopping cart user</a>
           <button
             class="navbar-toggler"
             type="button"
@@ -27,8 +27,9 @@
               </li>
               {{/if}}
               <li class="nav-item">
-                <a class="nav-link active" href="/cart">Carts</a>
-              </li>
+             <a class="nav-link active" href="/cart">Carts <span class="badge text-bg-success">{{cartCount}}</span></a>
+             </li>
+
               <li class="nav-item dropdown">
                 <a
                   class="nav-link dropdown-toggle"

@@ -11,14 +11,17 @@ const verifyLogin=(req,res,next)=>{
 }
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  productHelpers.getAllProduct().then((products)=>{
-    let user=req.session.user
-    console.log("user",user);
-   // console.log('products:',products);//
-    res.render('user/view-products',{products,user});
-  })
-})
+router.get('/', async function(req, res, next) {
+  let user = req.session.user;
+  let cartCount = null;
+  if (req.session.user) {
+      cartCount = await userHelpers.getCartCount(req.session.user._id);
+  }
+  productHelpers.getAllProduct().then((products) => {
+      res.render('user/view-products', { products, user, cartCount });
+  });
+});
+
 
 router.get('/login', (req, res) => {
   if (req.session.loggedIn) {
@@ -68,18 +71,19 @@ router.get('/logout',(req,res)=>{
 router.get('/cart',verifyLogin,async(req,res)=>{
   let products=await userHelpers.getCartProducts(req.session.user._id) 
   console.log(products);
-  res.render('user/cart')
+  res.render('user/cart',{products,user:req.session.user})
 })
 
 router.get('/add-to-cart/:id', verifyLogin, (req, res) => {
   userHelpers.addToCart(req.params.id, req.session.user._id)
-    .then(() => {
-      res.redirect('/');
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).send('Error adding to cart');
-    });
+      .then(() => {
+          console.log('Cart updated successfully'); // Add this line for debugging
+          res.redirect('/');
+      })
+      .catch((error) => {
+          console.error(error);
+          res.status(500).send('Error adding to cart');
+      });
 });
 
 
