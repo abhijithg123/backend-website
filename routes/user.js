@@ -39,13 +39,19 @@ router.get('/signup',(req,res)=>{
 })
 router.post('/signup', (req, res) => {
   userHelpers.doSignup(req.body).then((response) => {
-      console.log("response",response);
-      res.redirect('/login'); 
+      console.log("response", response);
+      req.session.loggedIn = true;
+      req.session.user = {
+          _id: response.userId,
+          name: response.userName,
+      };
+      res.redirect('/');
   }).catch((error) => {
-      console.error(error); // Log and handle errors
-      res.status(500).send('Error occurred during signup.'); // Handle errors
+      console.error(error);
+      res.status(500).send('Error occurred during signup.');
   });
-})
+});
+
 router.post('/login', (req, res) => {
   userHelpers.doLogin(req.body).then((response) => {
     if (response.status === 'success') {

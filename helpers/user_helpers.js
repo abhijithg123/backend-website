@@ -3,17 +3,19 @@ var collection=require('../config/collection')
 const bcrypt=require('bcrypt');
 const { ObjectId } = require('mongodb');
 module.exports={
-        doSignup: (userData) => {
-            return new Promise(async (resolve, reject) => { // Fixed the 'promise' typo
-                userData.password = await bcrypt.hash(userData.password, 10);
-                db.get().collection(collection.USER_COLLECTION).insertOne(userData).then((data) => {
-                    resolve('data:', data.insertedId);
+  doSignup: (userData) => {
+    return new Promise(async (resolve, reject) => {
+        userData.password = await bcrypt.hash(userData.password, 10);
+        db.get().collection(collection.USER_COLLECTION).insertOne(userData).then((data) => {
+            // Resolve with both user ID and name
+            resolve({ userId: data.insertedId, userName: userData.name });
+        }).catch((err) => {
+            reject(err);
+        });
+    });
+},
 
-                }).catch((err) => {
-                    reject(err); // Handle errors properly
-                });
-            });
-        },
+       
         doLogin: (userData) => {
                 return new Promise(async (resolve, reject) => {
                   try {
@@ -67,32 +69,49 @@ module.exports={
                     }
                 });
             },//agrregst for combining 2 trables using lookup
-            getCartProducts:(userId)=>{
-              return new Promise(async(resolve, reject) => {
-                let cartItems=await db.get().collection(collection.CART_COLLECTION).aggregate([
-                  {
-                    $match:{user:new ObjectId(userId)}
-                  },
-                  {
-                    $lookup:
-                    {
-                      from:collection.PRODUCT_COLLECTION,
-                      let:{prolist:'$products'},
-                      pipeline:[
-                        {
-                          $match:{
-                            $expr:{
-                              $in:['$_id','$$prolist']
+            getCartProducts: (userId) => {
+              return new Promise(async (resolve, reject) => {
+                try {
+                  let cart = await db.get().collection(collection.CART_COLLECTION).findOne({ user: new ObjectId(userId) });
+            
+                  if (cart && cart.products && cart.products.length > 0) {
+                    let cartItems = await db.get().collection(collection.CART_COLLECTION).aggregate([
+                      {
+                        $match: { user: new ObjectId(userId) }
+                      },
+                      {
+                        $lookup: {
+                          from: collection.PRODUCT_COLLECTION,
+                          let: { prolist: '$products' },
+                          pipeline: [
+                            {
+                              $match: {
+                                $expr: {
+                                  $in: ['$_id', '$$prolist']
+                                }
+                              }
                             }
-                          }
+                          ],
+                          as: 'cartItems'
                         }
-                      ],as:'cartItems'
+                      }
+                    ]).toArray();
+            
+                    if (cartItems.length > 0 && cartItems[0].cartItems) {
+                      resolve(cartItems[0].cartItems);
+                    } else {
+                      resolve([]); // Return an empty array if cartItems is empty
                     }
+                  } else {
+                    resolve([]); // Return an empty array if the cart or products array is empty
                   }
-                ]).toArray()
-                resolve(cartItems[0].cartItems)
-              })
+                } catch (error) {
+                  console.error('Error in getCartProducts:', error);
+                  reject(error);
+                }
+              });
             },
+            
             getCartCount: (userId) => {
               return new Promise(async(resolve, reject) => {
                 let count = 0;
