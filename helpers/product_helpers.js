@@ -31,7 +31,7 @@ module.exports = {
             });
         });
     },
-    getProductDetails:(proId)=>{
+    getProductDetails:(proId)=>{ ///for editing we sholud bring detai;s to edit
         return new Promise((resolve, reject) => {
             db.get().collection(collection.PRODUCT_COLLECTION).findOne({_id:new ObjectId(proId)}).then((product)=>{
                 resolve(product)

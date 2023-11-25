@@ -59,7 +59,6 @@ router.post('/login', (req, res) => {
       req.session.user = response.user;
       res.redirect('/');
     } else {
-     
       console.log("loginErr in POST /login:", req.session.loginErr); // Add this line for debugging
       res.render('user/login', { loginErr: "Invalid user or password" });
     }
@@ -81,17 +80,17 @@ router.get('/cart',verifyLogin,async(req,res)=>{
 })
 
 router.get('/add-to-cart/:id', verifyLogin, (req, res) => {
+  console.log('api calling');
   userHelpers.addToCart(req.params.id, req.session.user._id)
       .then(() => {
           console.log('Cart updated successfully'); // Add this line for debugging
-          res.redirect('/');
+          res.json({status:true})
       })
       .catch((error) => {
           console.error(error);
           res.status(500).send('Error adding to cart');
       });
 });
-
 
 
 module.exports = router;
