@@ -43,22 +43,52 @@ module.exports={
                 });
               },
               addToCart: (prodId, userId) => {
+                let proObj = {
+                    item: new ObjectId(prodId),
+                    quantity: 1
+                };
                 return new Promise(async (resolve, reject) => {
                     try {
                         let userCart = await db.get().collection(collection.CART_COLLECTION).findOne({ user: new ObjectId(userId) });
             
                         if (userCart) {
-                            console.log('Updating existing cart:', userCart);
-                            await db.get().collection(collection.CART_COLLECTION).updateOne(
-                                { user: new ObjectId(userId) },
-                                { $push: { products: new ObjectId(prodId) } }
-                            );
-                            resolve();
+                            let proExist = userCart.products.findIndex(product => product.item.toString() === prodId);
+                            console.log(proExist);
+            
+                            if (proExist !== -1) {
+                                await db.get().collection(collection.CART_COLLECTION).updateOne(
+                                    {
+                                        'user': new ObjectId(userId),
+                                        'products.item': new ObjectId(prodId)
+                                    },
+                                    {
+                                        $inc: { 'products.$.quantity': 1 }
+                                    }
+                                ).then(() => {
+                                    resolve();
+                                }).catch((error) => {
+                                    reject(error);
+                                });
+                            } else {
+                                console.log('Updating existing cart:', userCart);
+                                await db.get().collection(collection.CART_COLLECTION).updateOne(
+                                    {
+                                        user: new ObjectId(userId)
+                                    },
+                                    {
+                                        $push: { 'products': proObj }
+                                    }
+                                ).then(() => {
+                                    resolve();
+                                }).catch((error) => {
+                                    reject(error);
+                                });
+                            }
                         } else {
                             console.log('Creating a new cart.');
                             let cartObj = {
                                 user: new ObjectId(userId),
-                                products: [new ObjectId(prodId)]
+                                products: [proObj]
                             };
                             await db.get().collection(collection.CART_COLLECTION).insertOne(cartObj);
                             resolve();
@@ -68,6 +98,7 @@ module.exports={
                         reject(error);
                     }
                 });
+            
             },//agrregst for combining 2 trables using lookup
             getCartProducts: (userId) => {
               return new Promise(async (resolve, reject) => {
