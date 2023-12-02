@@ -54,7 +54,7 @@ module.exports={
                         if (userCart) {
                             let proExist = userCart.products.findIndex(product => product.item.toString() === prodId);
                             console.log(proExist);
-            
+             
                             if (proExist !== -1) {
                                 await db.get().collection(collection.CART_COLLECTION).updateOne(
                                     {
@@ -110,9 +110,9 @@ module.exports={
                       {
                         $match: { user: new ObjectId(userId) }
                       },
-                      {
+                      /*{
                         $lookup: {
-                          from: collection.PRODUCT_COLLECTION,
+                          from: collection.PRODUCT_COLLECTION,   look up sending only id products array
                           let: { prolist: '$products' },
                           pipeline: [
                             {
@@ -125,11 +125,30 @@ module.exports={
                           ],
                           as: 'cartItems'
                         }
+                      }*/
+                      {
+                        $unwind:'$products'
+                      },
+                      {
+                        $project:{                       //structure for lookup // 
+                          items:'$products.item',
+                          quantity: '$products.quantity'
+                        }
+                      },
+                      {
+                        $lookup:{
+                          from:collection.PRODUCT_COLLECTION,
+                          localField:'items',
+                          foreignField:'_id',
+                          as:'product'
+                        }
                       }
                     ]).toArray();
-            
-                    if (cartItems.length > 0 && cartItems[0].cartItems) {
-                      resolve(cartItems[0].cartItems);
+                  //  console.log(cartItems[0].product);//
+
+                    if (cartItems.length > 0 && cartItems) {
+                     
+                      resolve(cartItems);
                     } else {
                       resolve([]); // Return an empty array if cartItems is empty
                     }
