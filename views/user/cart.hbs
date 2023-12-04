@@ -14,16 +14,19 @@
   {{#each products}}
   <tbody>
     <tr>
-      {{#each product }}
-      <td><img style="width: 50px;height:50px" src="/images/{{this._id}}.jpg" alt=""></td>
-      <td>{{this.name}}</td>
-      {{/each}}
+      
+      
+      <td><img style="width: 50px;height:50px" src="/images/{{this.product._id}}.jpg" alt=""></td>
+      <td>{{this.product.name}}</td>
+      
+      
       <td>
-        <button type="button" class="btn btn-secondary increment-btn" data-id="{{this._id}}" onclick="incrementButton()">+</button>
-        <button type="button" class="btn btn-light quantity-btn">{{this.quantity}}</button>
-        <button type="button" class="btn btn-secondary decrement-btn" data-id="{{this._id}}">-</button>
-      <td><button type="button" class="btn btn-danger">remove</button></td>
+        <button type="button" class="btn btn-secondary count-btn"  onclick="changeQuantity('{{this._id}}','{{this.product._id}}',1)">+</button>
+        <span id="{{this.product._id}}">{{this.quantity}}</span>
+        <button type="button" class="btn btn-secondary count-btn" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',-1)">-</button>
       </td>
+      <td><button type="button" class="btn btn-danger" >remove</button></td>
+
     </tr>
     
   </tbody>
@@ -32,3 +35,29 @@
     </div>
    
 </section>
+<script>
+  function changeQuantity(cartId,proId,count){
+    let quantity=parseInt(document.getElementById(proId).innerHTML)//  quantity displayed in html page
+    count=parseInt(count)
+ 
+    $.ajax({
+      url:'/change-quantity-of-product/',
+      data:{
+        cart:cartId,
+        product:proId,
+        count:count,
+        quantity:quantity
+      },
+      method:'post',
+      success:(response)=>{
+        if(response.removeProduct){
+          alert('remove from cart')
+          location.reload()
+        }else{
+          document.getElementById(proId).innerHTML=quantity+count
+        }
+      }
+    })
+
+  }
+</script>

@@ -91,6 +91,13 @@ router.get('/add-to-cart/:id',  (req, res) => {
           res.status(500).send('Error adding to cart');
       });
 });
+router.post('/change-quantity-of-product/', (req, res, next) => {
+  userHelpers.changeProductQuantity(req.body).then((response)=>{
+    res.json(response)
+  })
+})
+
+
 
 
 module.exports = router;
