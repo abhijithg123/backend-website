@@ -96,7 +96,11 @@ router.post('/change-quantity-of-product/', (req, res, next) => {
     res.json(response)
   })
 })
-
+router.post('/remove-product-items/',(req,res,next)=>{
+  userHelpers.removeProductItems(req.body).then((response)=>{
+    res.json(response)
+  })
+})
 
 
 

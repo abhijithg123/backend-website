@@ -183,42 +183,58 @@ module.exports={
               });
             },
             changeProductQuantity: (details) => {
-          return new Promise((resolve, reject) => {
-            details.count = parseInt(details.count);
-            details.quantity = parseInt(details.quantity);
+            return new Promise((resolve, reject) => {
+              details.count = parseInt(details.count);
+              details.quantity = parseInt(details.quantity);
 
-            console.log('Details:', details); // Add this line to log details
+              console.log('Details:', details); // Add this line to log details
 
-            if (details.count == -1 && details.quantity === 1) {
-              db.get().collection(collection.CART_COLLECTION).updateOne(
-              { _id: new ObjectId(details.cart) },
-                {
-                  $pull: { products: { item: new ObjectId(details.product) } }
-                }
-              ).then((response) => {
-                console.log('Remove product response:', response); // Log the response
-                resolve({ removeProduct: true });
-              }).catch((error) => {
-                console.error('Error in remove product operation:', error);
-                reject(error);
-              });
-            } else {
-              db.get().collection(collection.CART_COLLECTION)
-                .updateOne(
-                  { _id: new ObjectId(details.cart), 'products.item': new ObjectId(details.product) },
-                  { $inc: { 'products.$.quantity': details.count } }
-                )
-                .then((response) => {
-                  console.log('Update quantity response:', response); // Log the response
-                  resolve(true);
-                })
-                .catch((error) => {
-                  console.error('Error in update quantity operation:', error);
+              if (details.count == -1 && details.quantity === 1) {
+                db.get().collection(collection.CART_COLLECTION).updateOne(
+                { _id: new ObjectId(details.cart) },
+                  {
+                    $pull: { products: { item: new ObjectId(details.product) } }
+                  }
+                ).then((response) => {
+                  console.log('Remove product response:', response); // Log the response
+                  resolve({ removeProduct: true });
+                }).catch((error) => {
+                  console.error('Error in remove product operation:', error);
                   reject(error);
                 });
-            }
-          });
-        }
+              } else {
+                db.get().collection(collection.CART_COLLECTION)
+                  .updateOne(
+                    { _id: new ObjectId(details.cart), 'products.item': new ObjectId(details.product) },
+                    { $inc: { 'products.$.quantity': details.count } }
+                  )
+                  .then((response) => {
+                    console.log('Update quantity response:', response); // Log the response
+                    resolve(true);
+                  })
+                  .catch((error) => {
+                    console.error('Error in update quantity operation:', error);
+                    reject(error);
+                  });
+              }
+            });
+          },
+          removeProductItems:(details)=>{
+            return new Promise((resolve, reject) => {
+              db.get().collection(collection.CART_COLLECTION).updateOne(
+                { _id: new ObjectId(details.cart) },
+                  {
+                    $pull: { products: { item: new ObjectId(details.product) } }
+                  }
+                ).then((response) => {
+                  console.log('Remove product response:', response); // Log the response
+                  resolve({ removeProduct: true });
+                }).catch((error) => {
+                  console.error('Error in remove product operation:', error);
+                  reject(error);
+                })
+            })
+          }
         
            
 }            
