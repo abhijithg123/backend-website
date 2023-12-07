@@ -101,6 +101,10 @@ router.post('/remove-product-items/',(req,res,next)=>{
     res.json(response)
   })
 })
+router.get('/place-order/',verifyLogin,async(req,res)=>{
+  let total=await userHelpers.getTotalAmount(req.session.user._id);
+  res.render('user/placeorder',{total})
+})
 
 
 

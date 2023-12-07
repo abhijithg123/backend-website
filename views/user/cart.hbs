@@ -27,13 +27,17 @@
       </td>
       <td><button type="button" class="btn btn-danger"onclick="removeProduct('{{this._id}}','{{this.product._id}}')"
        >remove</button></td>
-
     </tr>
-    
   </tbody>
   {{/each}}
 </table>
-    </div>
+<br>
+<div class="float-end me-5">
+  <h3 class="float-end me-5">Total price:Rs {{total}}</h3><br>
+  <a href="/place-order/" class="float-end  btn btn-success count-btn me-5">place order</a>
+</div>
+
+</div>
    
 </section>
 <script>

@@ -234,7 +234,62 @@ module.exports={
                   reject(error);
                 })
             })
-          }
+          },
+          getTotalAmount:(userId)=>{
+              return new Promise(async (resolve, reject) => {
+                try {
+                    let total = await db.get().collection(collection.CART_COLLECTION).aggregate([
+                      {
+                        $match: { user: new ObjectId(userId) }
+                      },
+                      
+                      {
+                        $unwind:'$products'
+                      },
+                      {
+                        $project:{                       //projected product item & quantity// 
+                          items:'$products.item',
+                          quantity: '$products.quantity'
+                        }
+                      },
+                      {
+                        $lookup:{
+                          from:collection.PRODUCT_COLLECTION,   // bringing product details //
+                          localField:'items',
+                          foreignField:'_id',
+                          as:'product'
+                        }
+                      },
+                      {
+                        $project:{
+                          item:1,quantity:1,product:{$arrayElemAt:['$product',0]}//convert array to object
+                        }
+                        
+                      },
+                      {
+                      $group: {
+                        _id: null,
+                        total: {
+                          $sum: {
+                            $multiply: [
+                              { $toInt: '$quantity' },
+                              { $toDouble: '$product.price' } // Use $toDouble in case 'product.price' is a decimal
+                            ]
+                          }
+                        }
+                      }
+                    }
+                    ]).toArray();
+                  console.log(total);
+                  resolve(total[0].total)
+                } catch (error) {
+                  console.error('Error in getCartProducts:', error);
+                  reject(error);
+                }
+              });
+            },
+
+          
         
            
 }            
