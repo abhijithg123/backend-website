@@ -171,17 +171,25 @@ module.exports={
             
             getCartCount: (userId) => {
               return new Promise(async(resolve, reject) => {
-                let count = 0;
-                let cart = await db.get().collection(collection.CART_COLLECTION).findOne({ user: new ObjectId(userId) });
+                try {
+                  let count = 0;
+                  let cart = await db.get().collection(collection.CART_COLLECTION).findOne({ user: new ObjectId(userId) });
             
-                if (cart && cart.products) {
-                  count = cart.products.length;
-                  console.log(cart.products.length);
+                  console.log('Cart in getCartCount:', cart); // Log the cart to see its structure
+            
+                  if (cart && cart.products) {
+                    count = cart.products.length;
+                    console.log('Product count:', count); // Log the product count
+                  }
+            
+                  resolve(count);
+                } catch (error) {
+                  console.error('Error in getCartCount:', error);
+                  reject(error);
                 }
-            
-                resolve(count);
               });
             },
+            
             changeProductQuantity: (details) => {
             return new Promise((resolve, reject) => {
               details.count = parseInt(details.count);
@@ -210,7 +218,7 @@ module.exports={
                   )
                   .then((response) => {
                     console.log('Update quantity response:', response); // Log the response
-                    resolve(true);
+                    resolve({status:true});
                   })
                   .catch((error) => {
                     console.error('Error in update quantity operation:', error);
@@ -281,7 +289,11 @@ module.exports={
                     }
                     ]).toArray();
                   console.log(total);
-                  resolve(total[0].total)
+                  if (total && total.length > 0) {
+                    resolve(total[0].total);
+                  } else {
+                    resolve(0); // or handle the case when total is not defined
+                  }
                 } catch (error) {
                   console.error('Error in getCartProducts:', error);
                   reject(error);
