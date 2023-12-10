@@ -18,31 +18,52 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="container pt-3 ">
+  <section>
+<div class="container pt-3 ">
+  <form action="/place-order/" id="checkout-form" method="post">
         <div class="row">
            <div class="col-md-6">
-             <form action="">
                     <h3>Enter Delivery Details</h3><br>
                     Address:<input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="address" name="address">
                     Pincode:<input type="text" class="form-control" id="exampleInputEmail1" name="pincode">
                     mobile:<input type="text" class="form-control" id="exampleInputEmail1" name="mobile">
-                </form>
+                    <input type="text" name="userId" value="{{user._id}}" hidden>
+
            </div>
                 
-                  <div class="col-md-6 pt-4">
-                <div class="custom-box ">
-                    Total amount: Rs {{total}}
-                    <hr>
-                    <label for="payment">Payment method</label><br>
-                    <label for="COD" class="pt-3" id="cod">COD</label>
-                    <input type="radio" name="payment"><br>
-                    <label for="online payment" class="pt-2" id="online payment">Online Payment</label>
-                    <input type="radio" name="payment"><br>
-                    <button class="btn btn-primary float-end">Checkout</button>
-                </div>
-             </div>
+
+     <div class="col-md-6 pt-4">
+              <div class="custom-box">
+                Total amount: Rs {{total}}
+                <hr>
+                <p>Payment method</p>
+                <label for="COD">COD</label> 
+                <input type="radio" id="COD" name="payment-method" value="COD" checked><br>
+                <label for="Online">Online Payment</label>
+                <input type="radio" id="Online" name="payment-method" value="ONLINE"><br>
+                <button class="btn btn-primary float-end" type="submit">Checkout</button>
               </div>
             </div>
+
+              </div>
+            </div>
+            </form>
         </div>
+        
+      </section> 
+      <script>
+        $('#checkout-form').submit((e)=>{
+          console.log($('#checkout-form').serialize());
+          e.preventDefault();
+          $.ajax({
+            url:'/place-order',
+            method:'post',
+           data: $('#checkout-form').serialize(),
+            success:(response)=>{
+              alert(response)
+            }
+          })
+        })
+      </script>
     </body>
 </html>

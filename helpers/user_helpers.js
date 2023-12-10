@@ -300,7 +300,38 @@ module.exports={
                 }
               });
             },
+            placeOrder:(order,products,total)=>{  
+              return new Promise((resolve, reject) => {
+                console.log(order,products,total);
+                let status=order['payment-method']==='COD'?'placed':'pending'
+                let orderObj={
+                  deliveryDetails:{
+                    address:order.address,
+                    pincode:order.pincode,
+                    mobile:order.mobile,
 
+                  },
+                  userId:new ObjectId(order.userId),
+                  paymentMethod:order['payment-method'],
+                  total:total,
+                  products:products,
+                  status:status,
+                  Date:new Date()
+                }
+                db.get().collection(collection.ORDER_COLLECTION).insertOne(orderObj).then((response)=>{ 
+                  db.get().collection(collection.CART_COLLECTION).deleteOne({user:new ObjectId(order.userId)})
+                  resolve()
+                })
+              })
+              
+
+            },
+            getCartProductsList:(userId)=>{
+              return new Promise (async(resolve,reject)=>{
+                let cart=await db.get().collection(collection.CART_COLLECTION).findOne({user:new ObjectId(userId)})
+                resolve(cart.products)
+              })
+            }
           
         
            
