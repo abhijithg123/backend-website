@@ -114,7 +114,21 @@ router.post('/place-order/',async(req,res)=>{
   userHelpers.placeOrder(req.body,cart,totalPrice).then((response)=>{
     res.json({status:true})
   })
+router.get('/order-success/',(req,res)=>{
+  console.log(req.session.user);
+  res.render('user/order-success',{user:req.session.user})
+})
 
+router.get('/orders/',verifyLogin,async(req,res)=>{
+let orders=await userHelpers.getUserOrderItems(req.session.user._id)
+res.render('user/orders',{user:req.session.user,orders})
+})
+
+router.get("/view-order-products/:id", async (req, res) => {
+  let products = await userHelpers.getOrderProducts(req.params.id);
+  console.log('products ',products);
+  res.render('user/view-order-products', { user: req.session.user, products });
+});
 
 })
 

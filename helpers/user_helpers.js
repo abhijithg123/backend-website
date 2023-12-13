@@ -331,7 +331,56 @@ module.exports={
                 let cart=await db.get().collection(collection.CART_COLLECTION).findOne({user:new ObjectId(userId)})
                 resolve(cart.products)
               })
-            }
+            },
+            getUserOrderItems:(userId)=>{
+              return new Promise(async(resolve, reject) => {
+                let orders=await db.get().collection(collection.ORDER_COLLECTION).find({userId:new ObjectId(userId)}).toArray()
+               // console.log(orders);//
+                resolve(orders)
+              })
+            },
+            getOrderProducts:(orderId)=>{
+              return new Promise(async(resolve, reject) => {
+                try {
+                  let orderItems= await db.get().collection(collection.ORDER_COLLECTION).aggregate([
+                    {
+                      $match: { _id: new ObjectId(orderId) }
+                    },
+                    
+                    {
+                      $unwind:'$products'
+                    },
+                    {
+                      $project:{                       //projected product item & quantity// 
+                        items:'$products.item',
+                        quantity: '$products.quantity'
+                      }
+                    },
+                    {
+                      $lookup:{
+                        from:collection.PRODUCT_COLLECTION,   // bringing product details //
+                        localField:'items',
+                        foreignField:'_id',
+                        as:'product'
+                      }
+                    },
+                    {
+                      $project:{
+                        item:1,quantity:1,product:{$arrayElemAt:['$product',0]}//convert array to object
+                      }
+                      
+                    },
+                   
+                  ]).toArray();
+                console.log(orderItems);
+                resolve(orderItems);
+              } catch (error) {
+                console.error('Error in getOrderProducts:', error);
+                reject(error);
+              }
+            });
+          },
+            
           
         
            
